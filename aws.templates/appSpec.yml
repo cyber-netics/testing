@@ -5,5 +5,5 @@ Resources:
       Properties:
         TaskDefinition: "arn:aws:ecs:$AWS_DEFAULT_REGION:$AWS_ACCOUNT_ID:task-definition/MyApp-Task-Def:88"
         LoadBalancerInfo:
-          ContainerName: "nginx"
+          ContainerName: "backend"
           ContainerPort: "80"

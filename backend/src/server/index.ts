@@ -10,7 +10,7 @@ interface IServer {
 
 class Server implements IServer {
   public app = express.application;
-  private port = 80;
+  private port = 3001;
 
   constructor() {
     this.app = express();
