@@ -1,0 +1,32 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      docker: 18
+
+  pre_build:
+    commands:
+      # Install Test depends
+      - npm --prefix ./backend install
+
+  build:
+    commands:
+      - bash ./scripts/create_artifacts.sh $AWS_ACCOUNT_ID $AWS_DEFAULT_REGION
+
+  post_build:
+    commands:
+      # Login to aws ECR
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+
+      # Tag images for ECR
+      - docker build -t backend -f ./backend/Dockerfile ./backend
+      - docker tag backend $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/backend:latest
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/backend:latest
+
+artifacts:
+  name: artifacts
+  files:
+    # Artifacts for codeDeploy, stores in S3
+    - ./appSpec.yml
+    - ./taskdef.json
